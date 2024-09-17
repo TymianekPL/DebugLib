@@ -10,6 +10,7 @@
 #ifdef DEBUG
 #ifndef DEBUG_PRINT
 #include <print>
+#include <tuple>
 
 template<typename T, typename = void>
 struct auto_const_reference
@@ -23,30 +24,10 @@ struct auto_const_reference <T, std::enable_if_t <(sizeof(T) > 16 || !std::is_tr
      using type = std::add_lvalue_reference_t <std::add_const_t <T> >;
 };
 
-template<typename TCurrent, typename... TRest>
-void DEBUG_PRINT_impl(const TCurrent& current, const TRest&... rest)
+template <class... T>
+void DEBUG_PRINT_impl(const T&... args)
 {
-     std::print("{} ", current);
-
-     if constexpr (sizeof...(rest) > 0) DEBUG_PRINT_impl(rest...);
-}
-template<typename TCurrent, typename... TRest>
-void DEBUG_PRINT_impl(TCurrent&& current, const TRest&... rest)
-{
-     std::print("{} ", current);
-
-     if constexpr (sizeof...(rest) > 0) DEBUG_PRINT_impl(rest...);
-}
-
-template<typename TLast>
-void DEBUG_PRINT_impl(const TLast& last)
-{
-     std::print("{}", last);
-}
-template<typename TLast>
-void DEBUG_PRINT_impl(TLast&& last)
-{
-     std::print("{}", last);
+    ((std::print("{} ", args)), ...);
 }
 
 #define DEBUG_PRINT DEBUG_PRINT_impl
